@@ -10,17 +10,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.pocketbook_expensetracker.R
 import com.example.pocketbook_expensetracker.data.model.Transaction
 import com.example.pocketbook_expensetracker.databinding.FragmentEditExpenseBinding
 import com.example.pocketbook_expensetracker.databinding.ItemCategoryBinding
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.launch
 
 class EditExpenseFragment : Fragment() {
 
@@ -42,36 +42,11 @@ class EditExpenseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val form = binding.editForm
 
-        val id = requireArguments().getString("transactionId").orEmpty()
-        viewModel.loadTransaction(id)
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.transaction.collect { transaction ->
-                        if (transaction != null) populateForm(transaction)
-                    }
-                }
-                launch {
-                    viewModel.error.collect { error ->
-                        if (error != null) {
-                            Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
-                            viewModel.clearError()
-                        }
-                    }
-                }
-            }
-        }
-
-
-
-
-
         form.tvTitle.text = "Edit expense"
         form.tvType.text = selectedType
         form.tvPayment.text = selectedPayment
-        updateDate()
         form.btnSaveExpense.visibility = View.GONE
+        updateDate()
 
         categories = listOf(
             "Food" to form.categoryFood,
@@ -85,6 +60,7 @@ class EditExpenseFragment : Fragment() {
         )
 
         val icons = listOf("🍜", "🛒", "🚌", "💡", "🎬", "🩺", "🛍", "+")
+
         categories.forEachIndexed { index, (name, tile) ->
             tile.tvCategoryName.text = name
             tile.tvCategoryIcon.text = icons[index]
@@ -95,12 +71,36 @@ class EditExpenseFragment : Fragment() {
         }
 
         updateCategory()
+
         form.btnClose.setOnClickListener { findNavController().popBackStack() }
         form.boxType.setOnClickListener { showTypeDialog() }
         form.boxDate.setOnClickListener { showDatePicker() }
         form.boxPayment.setOnClickListener { showPaymentDialog() }
         binding.btnUpdateExpense.setOnClickListener { updateExpense() }
         binding.btnDeleteExpense.setOnClickListener { showDeleteDialog() }
+
+        val id = requireArguments().getString("transactionId").orEmpty()
+        viewModel.loadTransaction(id)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.transaction.collect { transaction ->
+                        if (transaction != null && currentTransaction?.id != transaction.id) {
+                            populateForm(transaction)
+                        }
+                    }
+                }
+                launch {
+                    viewModel.error.collect { error ->
+                        if (error != null) {
+                            Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+                            viewModel.clearError()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun updateCategory() {
@@ -138,10 +138,10 @@ class EditExpenseFragment : Fragment() {
 
     private fun updateExpense() {
         val transaction = currentTransaction ?: return
+        val name = binding.editForm.etNote.text.toString().trim()
 
-        val name = binding.editForm.etName.text.toString().trim()
         if (name.isBlank()) {
-            binding.editForm.etName.error = "Please enter a transaction name"
+            binding.editForm.etNote.error = "Please enter a note"
             return
         }
 
@@ -152,7 +152,6 @@ class EditExpenseFragment : Fragment() {
             binding.editForm.etAmount.error = error
             return
         }
-
 
         val icon = when (selectedCategory) {
             "Food" -> "🍜"
@@ -165,7 +164,6 @@ class EditExpenseFragment : Fragment() {
             else -> "💰"
         }
 
-
         val updated = transaction.copy(
             name = name,
             amount = amountText.toDouble(),
@@ -173,7 +171,7 @@ class EditExpenseFragment : Fragment() {
             type = selectedType,
             paymentMethod = selectedPayment,
             date = selectedDate.toString(),
-            note = binding.editForm.etNote.text.toString(),
+            note = name,
             icon = icon
         )
 
@@ -200,7 +198,6 @@ class EditExpenseFragment : Fragment() {
             .show()
     }
 
-
     private fun populateForm(transaction: Transaction) {
         currentTransaction = transaction
         selectedCategory = transaction.category
@@ -209,14 +206,13 @@ class EditExpenseFragment : Fragment() {
         selectedDate = runCatching { LocalDate.parse(transaction.date) }.getOrDefault(LocalDate.now())
 
         binding.editForm.tvTitle.text = "Edit expense"
-        binding.editForm.etName.setText(transaction.name)
         binding.editForm.etAmount.setText(transaction.amount.toString())
-        binding.editForm.etNote.setText(transaction.note)
+        binding.editForm.etNote.setText(transaction.name.ifBlank { transaction.note })
         binding.editForm.tvType.text = selectedType
         binding.editForm.tvPayment.text = selectedPayment
         binding.editForm.btnSaveExpense.visibility = View.GONE
+
         updateDate()
         updateCategory()
     }
-
 }

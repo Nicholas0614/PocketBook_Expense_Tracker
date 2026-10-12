@@ -40,9 +40,9 @@ class AddExpenseViewModel : ViewModel() {
 
     fun validateAmount(amount: String): String? = TransactionValidator.validateAmount(amount)
 
-    fun saveTransaction(name: String, amount: String, date: String, note: String) {
-        if (name.isBlank()) {
-            _saveResult.value = "Please enter a transaction name"
+    fun saveTransaction(note: String, amount: String, date: String) {
+        if (note.isBlank()) {
+            _saveResult.value = "Please enter a note"
             return
         }
 
@@ -65,13 +65,13 @@ class AddExpenseViewModel : ViewModel() {
         }
 
         val transaction = Transaction(
-            name = name.trim(),
+            name = note,
             amount = amount.toDouble(),
             category = category,
             type = _selectedType.value,
             paymentMethod = _selectedPayment.value,
             date = date,
-            note = note.trim(),
+            note = note,
             icon = icon
         )
 

@@ -72,37 +72,6 @@
             android:selectAllOnFocus="true"
             android:layout_marginTop="2dp" />
 
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="20dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Transaction name"
-                android:textSize="13sp"
-                android:textColor="@color/pocket_grey"
-                android:layout_marginBottom="6dp" />
-
-            <EditText
-                android:id="@+id/etName"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_expense_field"
-                android:hint="e.g. Noodle House"
-                android:inputType="textCapSentences"
-                android:singleLine="true"
-                android:textSize="14sp"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
-
-        </LinearLayout>
-
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

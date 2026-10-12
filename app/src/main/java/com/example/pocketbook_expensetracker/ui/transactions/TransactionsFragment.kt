@@ -54,6 +54,10 @@ class TransactionsFragment : Fragment() {
         binding.rvTransactions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTransactions.adapter = adapter
 
+        binding.btnAdd.setOnClickListener {
+            findNavController().navigate(R.id.action_transactionsFragment_to_addExpenseFragment)
+        }
+
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {

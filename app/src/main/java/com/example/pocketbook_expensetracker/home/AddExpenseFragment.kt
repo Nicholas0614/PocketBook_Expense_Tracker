@@ -1,7 +1,8 @@
+
 package com.example.pocketbook_expensetracker.home
 
-import android.app.DatePickerDialog
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -81,7 +82,6 @@ class AddExpenseFragment : Fragment() {
                         }
                     }
                 }
-
             }
         }
     }
@@ -113,15 +113,13 @@ class AddExpenseFragment : Fragment() {
         }, selectedDate.year, selectedDate.monthValue - 1, selectedDate.dayOfMonth).show()
     }
 
-
     private fun validateForm() {
-        val name = binding.etName.text.toString()
+        val name = binding.etNote.text.toString().trim()
         val amount = binding.etAmount.text.toString()
-        val note = binding.etNote.text.toString()
         val date = selectedDate.toString()
 
         if (name.isBlank()) {
-            binding.etName.error = "Please enter a transaction name"
+            binding.etNote.error = "Please enter a note"
             return
         }
 
@@ -132,7 +130,6 @@ class AddExpenseFragment : Fragment() {
         }
 
         binding.btnSaveExpense.isEnabled = false
-        viewModel.saveTransaction(name, amount, date, note)
+        viewModel.saveTransaction(name, amount, date)
     }
-
 }

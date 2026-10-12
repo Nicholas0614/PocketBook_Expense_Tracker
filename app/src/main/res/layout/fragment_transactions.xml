@@ -44,7 +44,7 @@
         android:paddingStart="14dp"
         android:paddingEnd="14dp"
         android:background="@drawable/bg_white_card"
-        android:hint="Search by name or note"
+        android:hint="Search by note"
         android:singleLine="true"
         android:textSize="13sp"
         android:inputType="text"
