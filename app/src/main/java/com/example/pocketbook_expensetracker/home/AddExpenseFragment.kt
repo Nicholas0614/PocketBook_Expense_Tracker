@@ -4,9 +4,12 @@ package com.example.pocketbook_expensetracker.home
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.pocketbook_expensetracker.R
 import com.example.pocketbook_expensetracker.databinding.FragmentAddExpenseBinding
 import com.example.pocketbook_expensetracker.databinding.ItemCategoryBinding
+import com.example.pocketbook_expensetracker.util.CustomCategories
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -26,7 +30,7 @@ class AddExpenseFragment : Fragment() {
 
     private lateinit var binding: FragmentAddExpenseBinding
     private val viewModel: AddExpenseViewModel by viewModels()
-    private lateinit var categories: List<Pair<String, ItemCategoryBinding>>
+    private lateinit var categories: MutableList<Pair<String, ItemCategoryBinding>>
     private var selectedDate = LocalDate.now()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -46,15 +50,20 @@ class AddExpenseFragment : Fragment() {
             "Health" to binding.categoryHealth,
             "Shopping" to binding.categoryShopping,
             "New" to binding.categoryNew
-        )
+        ).toMutableList()
 
         val icons = listOf("🍜", "🛒", "🚌", "💡", "🎬", "🩺", "🛍", "+")
 
         categories.forEachIndexed { index, (name, tile) ->
             tile.tvCategoryName.text = name
             tile.tvCategoryIcon.text = icons[index]
-            tile.root.setOnClickListener { viewModel.setCategory(name) }
+            tile.root.setOnClickListener {
+                if (name == "New") showAddCategoryDialog()
+                else viewModel.setCategory(name)
+            }
         }
+
+        loadCustomCategories()
 
         binding.tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH))
         binding.btnClose.setOnClickListener { findNavController().popBackStack() }
@@ -86,9 +95,77 @@ class AddExpenseFragment : Fragment() {
         }
     }
 
+    private fun loadCustomCategories() {
+        CustomCategories.get(requireContext()).forEach { addCategoryTile(it) }
+    }
+
+    private fun addCategoryTile(name: String) {
+        if (categories.any { it.first == name }) return
+
+        val customCount = categories.size - 8
+        val container = binding.categoryContainer
+
+        val row = if (customCount % 4 == 0) LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            val margin = (8 * resources.displayMetrics.density).toInt()
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = margin }
+            container.addView(this)
+        } else container.getChildAt(container.childCount - 1) as LinearLayout
+
+        val tile = ItemCategoryBinding.inflate(layoutInflater, row, false)
+        tile.root.layoutParams = LinearLayout.LayoutParams(
+            0,
+            (64 * resources.displayMetrics.density).toInt(),
+            1f
+        ).apply {
+            if (customCount % 4 != 0) marginStart = (7 * resources.displayMetrics.density).toInt()
+        }
+
+        tile.tvCategoryName.text = name
+        tile.tvCategoryIcon.text = "🏷"
+        tile.root.setOnClickListener { viewModel.setCategory(name) }
+
+        row.addView(tile.root)
+        categories.add(name to tile)
+        updateCategory(viewModel.selectedCategory.value)
+    }
+
+    private fun showAddCategoryDialog() {
+        val input = EditText(requireContext()).apply {
+            hint = "Category name"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            maxLines = 1
+        }
+
+        val wrapper = LinearLayout(requireContext()).apply {
+            setPadding(48, 8, 48, 0)
+            addView(input)
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Add category")
+            .setView(wrapper)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Add") { _, _ ->
+                val name = CustomCategories.add(requireContext(), input.text.toString())
+                if (name == null) {
+                    Toast.makeText(requireContext(), "Enter a unique category name (1-20 characters)", Toast.LENGTH_LONG).show()
+                } else {
+                    addCategoryTile(name)
+                    viewModel.setCategory(name)
+                }
+            }.show()
+    }
+
     private fun updateCategory(selected: String) {
         categories.forEach { (name, tile) ->
-            tile.root.setBackgroundResource(if (name == selected) R.drawable.bg_category_selected else R.drawable.bg_expense_field)
+            tile.root.setBackgroundResource(
+                if (name == selected) R.drawable.bg_category_selected
+                else R.drawable.bg_expense_field
+            )
         }
     }
 

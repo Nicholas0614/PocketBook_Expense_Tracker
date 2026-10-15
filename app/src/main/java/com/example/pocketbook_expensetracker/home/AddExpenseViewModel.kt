@@ -61,7 +61,7 @@ class AddExpenseViewModel : ViewModel() {
             "Fun" -> "🎬"
             "Health" -> "🩺"
             "Shopping" -> "🛍"
-            else -> "💰"
+            else -> "🏷"
         }
 
         val transaction = Transaction(
