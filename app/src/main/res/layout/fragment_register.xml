@@ -1,61 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
+    android:fillViewport="true"
+    android:background="#F7F9FA"
     tools:context=".home.RegisterFragment">
 
-    <TextView
-        android:id="@+id/tvTitle"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Create Account"
-        android:textSize="30sp"
-        android:textStyle="bold"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginBottom="32dp" />
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp">
 
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Full Name"
-        android:inputType="textPersonName" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Account"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:textColor="#182A2C"
+            android:gravity="center" />
 
-    <EditText
-        android:id="@+id/etEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:layout_marginTop="16dp" />
 
-    <EditText
-        android:id="@+id/etPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:layout_marginTop="16dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Full Name"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:layout_marginTop="24dp" />
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Enter your full name"
+            android:inputType="textPersonName"
+            android:textSize="16sp"
+            android:textColor="#222222"
+            android:textColorHint="#9A9A9A"
+            android:background="@drawable/bg_input"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:maxLines="1" />
 
-    <TextView
-        android:id="@+id/tvLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Already have an account? Login"
-        android:gravity="center"
-        android:textColor="#008C95"
-        android:padding="16dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Enter your email"
+            android:inputType="textEmailAddress"
+            android:textSize="16sp"
+            android:textColor="#222222"
+            android:textColorHint="#9A9A9A"
+            android:background="@drawable/bg_input"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:maxLines="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Create a password"
+            android:inputType="textPassword"
+            android:textSize="16sp"
+            android:textColor="#222222"
+            android:textColorHint="#9A9A9A"
+            android:background="@drawable/bg_input"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:maxLines="1" />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Create Account"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:backgroundTint="#008C95"
+            android:layout_marginTop="28dp" />
+
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Already have an account?  Login"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#008C95"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>
