@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
-import com.example.pocketbook_expensetracker.data.repo.AuthRepo
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 
 data class HomeUiState(
@@ -25,22 +22,6 @@ data class HomeUiState(
 class HomeViewModel : ViewModel() {
 
     private val repo = TransactionRepo.getInstance()
-
-
-    private val authRepo = AuthRepo.getInstance()
-
-    private val _userName = MutableStateFlow("")
-    val userName: StateFlow<String> = _userName
-
-    fun loadUserName() {
-        viewModelScope.launch {
-            try {
-                _userName.value = authRepo.getUserName()
-            } catch (e: Exception) {
-                _userName.value = ""
-            }
-        }
-    }
 
 
     val uiState: StateFlow<HomeUiState> = repo.getTransactions().map { transactions ->

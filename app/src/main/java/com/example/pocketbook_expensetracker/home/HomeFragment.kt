@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -26,7 +25,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val viewModel: HomeViewModel by viewModels()
 
-    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -46,44 +44,22 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        viewModel.loadUserName()
 
 
+        binding.tvUsername.text = "My PocketBook"
+        binding.tvAvatar.text = "P"
         binding.navActivity.setOnClickListener { openTab(R.id.transactionsFragment) }
         binding.navReports.setOnClickListener { openTab(R.id.reportsFragment) }
         binding.tvSeeAll.setOnClickListener { openTab(R.id.transactionsFragment) }
         binding.btnAdd.setOnClickListener { findNavController().navigate(R.id.action_homeFragment_to_addExpenseFragment) }
 
-        binding.tvAvatar.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Logout")
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Logout") { _, _ ->
-
-                    findNavController().navigate(R.id.loginFragment, null, androidx.navigation.navOptions {
-                        popUpTo(R.id.nav_graph) { inclusive = false }
-                        launchSingleTop = true
-                    })
-                    authViewModel.logout()
-
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
-        }
-
-
+        binding.tvAvatar.setOnClickListener { }
 
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.uiState.collect { state -> updateDashboard(state) }
-                }
-                launch {
-                    viewModel.userName.collect { name ->
-                        binding.tvUsername.text = name.ifBlank { "User" }
-                        binding.tvAvatar.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
-                    }
                 }
             }
         }
@@ -96,7 +72,7 @@ class HomeFragment : Fragment() {
         binding.tvExpenses.text = "-${formatMoney(state.expenses)}"
         binding.tvSpentDescription.text = "${formatMoney(state.expenses)} spent"
         binding.tvIncomeDescription.text = "of ${formatMoney(state.income)} income"
-        binding.tvBalanceMonth.text = "Balance in ${LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH))}"
+        binding.tvBalanceMonth.text = "Net this ${LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH))}"
 
 
 
@@ -121,7 +97,7 @@ class HomeFragment : Fragment() {
         row.tvAmount.setTextColor(requireContext().getColor(if (isIncome) R.color.pocket_green else R.color.pocket_red))
     }
 
-    private fun formatMoney(amount: Double): String = String.format(Locale.US, "$%,.2f", amount)
+    private fun formatMoney(amount: Double): String = String.format(Locale.US, "RM %,.2f", amount)
 
     private fun formatDate(date: String): String {
         return try {

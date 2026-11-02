@@ -11,6 +11,6 @@ interface TransactionRepo {
     suspend fun deleteTransaction(id: String)
 
     companion object {
-        fun getInstance(): TransactionRepo = TransactionRepoImpl()
+        fun getInstance(): TransactionRepo = LocalTransactionRepo.getInstance()
     }
 }
